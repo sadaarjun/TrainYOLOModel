@@ -1,0 +1,134 @@
+{% extends 'layout.html' %}
+
+{% block title %}Test YOLO Model{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Test YOLO Model</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card custom-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Test Image</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Upload an image to test license plate detection.</p>
+                
+                <div id="image-dropzone" class="dropzone mb-3">
+                    <div class="text-center">
+                        <i class="bi bi-image fs-1 mb-2"></i>
+                        <p>Drag & drop your image here or click to select</p>
+                        <p class="text-muted small">Supported formats: JPG, PNG, JPEG</p>
+                    </div>
+                </div>
+                
+                <div id="image-preview" class="image-preview mt-3">
+                    <p class="text-muted">Image preview will appear here</p>
+                </div>
+                
+                <div id="detection-results" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card custom-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Available Models</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2">Selected model: <span id="selected-model" class="fw-bold">None</span></p>
+                
+                <div class="model-selector list-group mb-3">
+                    {% if models %}
+                        {% for model in models %}
+                            <a href="#" class="list-group-item list-group-item-action model-option" data-model-path="models/{{ model }}" data-model-name="{{ model }}">
+                                <i class="bi bi-file-earmark-code me-2"></i> {{ model }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">No models available</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#uploadModelModal">
+                        <i class="bi bi-upload"></i> Upload Model
+                    </button>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label for="confidence-threshold" class="form-label">Confidence Threshold: <span id="confidence-value">0.25</span></label>
+                    <input type="range" class="form-range" min="0.05" max="0.95" step="0.05" value="0.25" id="confidence-threshold">
+                    <div class="form-text">Higher values show fewer, more confident detections.</div>
+                </div>
+                
+                <button id="test-model-btn" class="btn btn-primary w-100" onclick="testModel()" disabled>
+                    <i class="bi bi-search"></i> Detect License Plates
+                </button>
+            </div>
+        </div>
+        
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0">Testing Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">Use clear images with good lighting</li>
+                    <li class="mb-2">Adjust confidence threshold as needed</li>
+                    <li class="mb-2">Try different angles and distances</li>
+                    <li class="mb-2">Test with different license plate styles</li>
+                    <li class="mb-2">Models trained on specific plate types may not generalize to all plates</li>
+                </ul>
+                
+                <hr>
+                
+                <div class="mt-3">
+                    <p class="mb-1"><i class="bi bi-cpu"></i> <strong>Raspberry Pi Users:</strong></p>
+                    <ul class="small mb-0">
+                        <li>NCNN format provides best performance</li>
+                        <li>The app automatically repairs corrupt models</li>
+                        <li>If you encounter "invalid magic number" errors, the model repair function will fix them</li>
+                    </ul>
+                    <p class="mt-2 small text-muted">
+                        Export models to NCNN format in the settings page for optimal Raspberry Pi performance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Model Modal -->
+<div class="modal fade" id="uploadModelModal" tabindex="-1" aria-labelledby="uploadModelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModelModalLabel">Upload Model</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="model-upload-form">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="model-file" class="form-label">Select Model File</label>
+                        <input class="form-control" type="file" id="model-file" accept=".pt,.pth,.onnx,.param">
+                        <div class="form-text">Supported formats: .pt, .pth, .onnx, .param (NCNN)</div>
+                        <div class="form-text text-success"><i class="bi bi-info-circle"></i> NCNN format (.param files) is recommended for Raspberry Pi users</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/testing.js') }}"></script>
+{% endblock %}

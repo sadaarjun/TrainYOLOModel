@@ -1,0 +1,9 @@
+
+# License plate detection dataset
+path: /home/runner/workspace/datasets/auto_annotated
+train: train/images
+val: valid/images
+
+# Classes
+names:
+  0: license_plate

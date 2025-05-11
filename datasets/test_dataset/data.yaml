@@ -1,0 +1,7 @@
+names:
+- license_plate
+nc: 1
+path: datasets/test_dataset
+test: datasets/test_dataset/test/images
+train: datasets/test_dataset/train/images
+val: datasets/test_dataset/val/images

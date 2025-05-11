@@ -1,0 +1,293 @@
+{% extends 'layout.html' %}
+
+{% block title %}Installation Guide{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h1 class="display-4 mb-4">Installation Guide</h1>
+            <p class="lead">
+                Follow these instructions to set up the ANPR (Automatic Number Plate Recognition) system
+                on your Raspberry Pi or other device.
+            </p>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="install-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="requirements-tab" data-bs-toggle="tab" data-bs-target="#requirements" type="button" role="tab" aria-controls="requirements" aria-selected="true">Requirements</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="raspberry-tab" data-bs-toggle="tab" data-bs-target="#raspberry" type="button" role="tab" aria-controls="raspberry" aria-selected="false">Raspberry Pi Setup</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="model-tab" data-bs-toggle="tab" data-bs-target="#model" type="button" role="tab" aria-controls="model" aria-selected="false">Model Usage</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="troubleshooting-tab" data-bs-toggle="tab" data-bs-target="#troubleshooting" type="button" role="tab" aria-controls="troubleshooting" aria-selected="false">Troubleshooting</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="install-tabContent">
+                        <!-- Requirements Tab -->
+                        <div class="tab-pane fade show active" id="requirements" role="tabpanel" aria-labelledby="requirements-tab">
+                            <h3>System Requirements</h3>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Hardware Requirements</div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Raspberry Pi 4 (2GB+ RAM) or better</li>
+                                            <li class="list-group-item">USB Camera or Raspberry Pi Camera module</li>
+                                            <li class="list-group-item">16GB+ microSD card</li>
+                                            <li class="list-group-item">Power supply (5V, 3A recommended)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Software Requirements</div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Raspberry Pi OS (Buster or newer, 64-bit recommended)</li>
+                                            <li class="list-group-item">Python 3.7+ with pip</li>
+                                            <li class="list-group-item">Tesseract OCR</li>
+                                            <li class="list-group-item">OpenCV 4.x with Python bindings</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3>Dependency Installation</h3>
+                            <div class="card">
+                                <div class="card-header">Required Python Packages</div>
+                                <div class="card-body">
+                                    <p>Install these dependencies on your Raspberry Pi:</p>
+                                    <pre><code class="language-bash">sudo apt update
+sudo apt install -y python3-pip python3-opencv tesseract-ocr libtesseract-dev git cmake build-essential libopenblas-dev
+
+# Install Python dependencies
+pip3 install numpy pytesseract pillow</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Raspberry Pi Tab -->
+                        <div class="tab-pane fade" id="raspberry" role="tabpanel" aria-labelledby="raspberry-tab">
+                            <h3>Raspberry Pi Optimization</h3>
+                            <p>To get the best performance on Raspberry Pi, we'll use the NCNN framework, which is optimized for ARM devices.</p>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> 
+                                The YOLOv11 model exported as NCNN format will be much faster on Raspberry Pi than the standard PT format.
+                            </div>
+                            
+                            <h4>Installing NCNN on Raspberry Pi</h4>
+                            <pre><code class="language-bash"># Install NCNN dependencies
+sudo apt install -y libvulkan-dev
+
+# Clone and build NCNN with Vulkan support (for better performance)
+git clone https://github.com/Tencent/ncnn.git
+cd ncnn
+git submodule update --init
+mkdir -p build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DNCNN_VULKAN=ON -DNCNN_BUILD_EXAMPLES=ON ..
+make -j4
+sudo make install
+
+# Install Python bindings for NCNN
+pip3 install ncnn</code></pre>
+                            
+                            <h4>Camera Setup</h4>
+                            <p>If using the Raspberry Pi Camera:</p>
+                            <pre><code class="language-bash"># Enable the camera interface
+sudo raspi-config
+# Choose 'Interface Options' -> 'Camera' -> 'Yes'
+# Reboot after enabling
+
+# Test camera
+raspistill -o test.jpg</code></pre>
+                        </div>
+                        
+                        <!-- Model Setup Tab -->
+                        <div class="tab-pane fade" id="model" role="tabpanel" aria-labelledby="model-tab">
+                            <h3>Model Setup</h3>
+                            
+                            <h4>Obtaining the Model</h4>
+                            <p>
+                                There are three ways to get a YOLOv11 model for license plate recognition:
+                            </p>
+                            <ol>
+                                <li>Train your own model using the Train tab in this application</li>
+                                <li>Download a pre-trained model from the Model tab</li>
+                                <li>Use transfer learning with a small dataset of license plates</li>
+                            </ol>
+                            
+                            <h4>Exporting for Raspberry Pi</h4>
+                            <p>
+                                After training or uploading a model, use the "Export Model" button on the Train page
+                                and select NCNN format for optimal Raspberry Pi performance. Download both the
+                                <code>.param</code> and <code>.bin</code> files.
+                            </p>
+                            
+                            <h4>Using the Model</h4>
+                            <p>Copy the updated anpr_processor.py file and model files to your Raspberry Pi:</p>
+                            <pre><code class="language-bash"># If export to NCNN format
+python3 anpr_processor_updated.py image.jpg model.param
+
+# If using standard YOLOv11 PT format
+python3 anpr_processor_updated.py image.jpg model.pt</code></pre>
+                            
+                            <h4>Example Code</h4>
+                            <p>Here's a basic example to get started with license plate detection:</p>
+                            <pre><code class="language-python">import cv2
+from anpr_processor_updated import ANPRSettings, process_anpr
+
+# Create settings and configure model path
+settings = ANPRSettings()
+settings.model_path = "your_model.param"  # or .pt file
+settings.yolo_confidence = 0.25
+
+# Initialize camera
+cap = cv2.VideoCapture(0)  # 0 for USB camera, or use a file path for testing
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+        
+    # Process frame for license plate detection
+    success, plate_text = process_anpr(frame, settings)
+    
+    # Display results
+    if success:
+        cv2.putText(frame, f"Plate: {plate_text}", (10, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    
+    cv2.imshow("ANPR", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+        
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+                        </div>
+                        
+                        <!-- Troubleshooting Tab -->
+                        <div class="tab-pane fade" id="troubleshooting" role="tabpanel" aria-labelledby="troubleshooting-tab">
+                            <h3>Troubleshooting</h3>
+                            
+                            <div class="accordion" id="troubleAccordion">
+                                <!-- Model Loading Issues -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingModelLoad">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModelLoad" aria-expanded="false" aria-controls="collapseModelLoad">
+                                            Model Loading Issues
+                                        </button>
+                                    </h2>
+                                    <div id="collapseModelLoad" class="accordion-collapse collapse" aria-labelledby="headingModelLoad" data-bs-parent="#troubleAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Problem:</strong> "Invalid magic number" or model loading errors</p>
+                                            <p><strong>Solution:</strong></p>
+                                            <ol>
+                                                <li>Make sure you're using the correct model format (PT for desktop, NCNN for Raspberry Pi)</li>
+                                                <li>For NCNN models, ensure both .param and .bin files are in the same directory</li>
+                                                <li>Try re-exporting the model using the latest version of the application</li>
+                                                <li>For PT models, check PyTorch version compatibility</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- No Detection Issues -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingNoDetection">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNoDetection" aria-expanded="false" aria-controls="collapseNoDetection">
+                                            No License Plates Detected
+                                        </button>
+                                    </h2>
+                                    <div id="collapseNoDetection" class="accordion-collapse collapse" aria-labelledby="headingNoDetection" data-bs-parent="#troubleAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Problem:</strong> No license plates are being detected in images</p>
+                                            <p><strong>Solution:</strong></p>
+                                            <ol>
+                                                <li>Lower the confidence threshold: <code>settings.yolo_confidence = 0.2</code></li>
+                                                <li>Check camera focus and lighting conditions</li>
+                                                <li>Try with different images to verify model functionality</li>
+                                                <li>Verify the model was trained on similar license plates to what you're detecting</li>
+                                                <li>Enable preprocessing: <code>settings.enable_preprocessing = True</code></li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- OCR Issues -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOCR">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOCR" aria-expanded="false" aria-controls="collapseOCR">
+                                            OCR Quality Issues
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOCR" class="accordion-collapse collapse" aria-labelledby="headingOCR" data-bs-parent="#troubleAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Problem:</strong> Poor OCR recognition quality on license plates</p>
+                                            <p><strong>Solution:</strong></p>
+                                            <ol>
+                                                <li>Install additional Tesseract language data: <code>sudo apt-get install tesseract-ocr-eng</code></li>
+                                                <li>Adjust lighting to reduce glare on license plates</li>
+                                                <li>Try higher resolution camera settings</li>
+                                                <li>Mount camera at optimal angle (head-on to license plates)</li>
+                                                <li>Check debug images in debug/ directory to see OCR input quality</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Performance Issues -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingPerformance">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerformance" aria-expanded="false" aria-controls="collapsePerformance">
+                                            Performance Issues on Raspberry Pi
+                                        </button>
+                                    </h2>
+                                    <div id="collapsePerformance" class="accordion-collapse collapse" aria-labelledby="headingPerformance" data-bs-parent="#troubleAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Problem:</strong> Slow detection speed on Raspberry Pi</p>
+                                            <p><strong>Solution:</strong></p>
+                                            <ol>
+                                                <li>Use NCNN format instead of PT format models</li>
+                                                <li>Resize input images to smaller dimensions before processing</li>
+                                                <li>Process fewer frames (e.g., every 5th or 10th video frame)</li>
+                                                <li>Use YOLOv11n (nano) model variants for faster inference</li>
+                                                <li>Overclock Raspberry Pi (with adequate cooling)</li>
+                                                <li>Try Raspberry Pi OS Lite for reduced OS overhead</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activate Bootstrap tabs
+        const triggerTabList = [].slice.call(document.querySelectorAll('#install-tab button'));
+        triggerTabList.forEach(function(triggerEl) {
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            triggerEl.addEventListener('click', function(event) {
+                event.preventDefault();
+                tabTrigger.show();
+            });
+        });
+    });
+</script>
+{% endblock %}

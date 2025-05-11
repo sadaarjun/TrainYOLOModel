@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+
+{% block title %}YOLO License Plate Detection{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-dark p-5 rounded mb-4">
+    <h1 class="display-4">License Plate Detection</h1>
+    <p class="lead">Train and test YOLO models for license plate detection on Raspberry Pi.</p>
+    <hr class="my-4">
+    <p>This application allows you to train custom YOLO models for license plate detection, test models on images, and export them in various formats optimized for Raspberry Pi.</p>
+    <div class="mt-4">
+        <a href="/train" class="btn btn-primary me-2">
+            <i class="bi bi-mortarboard"></i> Train a Model
+        </a>
+        <a href="/test" class="btn btn-secondary">
+            <i class="bi bi-search"></i> Test a Model
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 custom-card">
+            <div class="card-body text-center">
+                <i class="bi bi-mortarboard fs-1 text-primary mb-3"></i>
+                <h5 class="card-title">Train Models</h5>
+                <p class="card-text">Train custom YOLO models for license plate detection using your own datasets.</p>
+                <ul class="text-start">
+                    <li>Support for YOLOv8/YOLOv5 models</li>
+                    <li>Transfer learning from pretrained models</li>
+                    <li>Custom dataset support</li>
+                    <li>Training progress visualization</li>
+                </ul>
+                <a href="/train" class="btn btn-primary mt-2">Start Training</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 custom-card">
+            <div class="card-body text-center">
+                <i class="bi bi-search fs-1 text-info mb-3"></i>
+                <h5 class="card-title">Test Models</h5>
+                <p class="card-text">Test your trained models on images to detect license plates.</p>
+                <ul class="text-start">
+                    <li>Upload and test images</li>
+                    <li>Adjust confidence threshold</li>
+                    <li>Visualize detected license plates</li>
+                    <li>Performance statistics</li>
+                </ul>
+                <a href="/test" class="btn btn-info mt-2">Test Models</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 custom-card">
+            <div class="card-body text-center">
+                <i class="bi bi-cpu fs-1 text-success mb-3"></i>
+                <h5 class="card-title">Raspberry Pi Optimized</h5>
+                <p class="card-text">Models optimized for running on Raspberry Pi hardware.</p>
+                <ul class="text-start">
+                    <li>Export to optimized formats</li>
+                    <li>TensorFlow Lite support</li>
+                    <li>ONNX format export</li>
+                    <li>Performance monitoring</li>
+                </ul>
+                <a href="/settings" class="btn btn-success mt-2">View Settings</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0">Getting Started Guide</h5>
+            </div>
+            <div class="card-body">
+                <h5>1. Prepare Your Dataset</h5>
+                <p>To train a custom license plate detection model, you need a dataset with labeled license plates.</p>
+                <ul>
+                    <li>Collect images containing license plates</li>
+                    <li>Label the license plates in YOLO format (class_id, x_center, y_center, width, height)</li>
+                    <li>Organize into train and validation folders</li>
+                    <li>Create a data.yaml file (or use our dataset builder)</li>
+                </ul>
+                
+                <h5>2. Train Your Model</h5>
+                <p>Train a custom YOLO model using your prepared dataset.</p>
+                <ul>
+                    <li>Upload your dataset or use the empty dataset template</li>
+                    <li>Select model type (YOLOv8n is recommended for Raspberry Pi)</li>
+                    <li>Configure training parameters</li>
+                    <li>Start training and monitor progress</li>
+                </ul>
+                
+                <h5>3. Test Your Model</h5>
+                <p>Test your trained model on new images to detect license plates.</p>
+                <ul>
+                    <li>Select your trained model</li>
+                    <li>Upload test images</li>
+                    <li>Adjust confidence threshold</li>
+                    <li>View detection results</li>
+                </ul>
+                
+                <h5>4. Export for Deployment</h5>
+                <p>Export your model to optimized formats for deployment on Raspberry Pi.</p>
+                <ul>
+                    <li>Select from TorchScript, ONNX, OpenVINO, or TFLite formats</li>
+                    <li>Deploy the exported model for inference</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

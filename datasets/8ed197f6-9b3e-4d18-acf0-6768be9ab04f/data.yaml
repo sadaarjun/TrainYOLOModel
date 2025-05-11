@@ -1,0 +1,6 @@
+names:
+- license_plate
+nc: 1
+path: datasets/8ed197f6-9b3e-4d18-acf0-6768be9ab04f
+train: datasets/8ed197f6-9b3e-4d18-acf0-6768be9ab04f/train/images
+val: datasets/8ed197f6-9b3e-4d18-acf0-6768be9ab04f/val/images

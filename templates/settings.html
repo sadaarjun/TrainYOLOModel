@@ -1,0 +1,143 @@
+{% extends 'layout.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Settings & System Information</h2>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div id="system-info-container">
+            <div class="d-flex justify-content-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="ms-3">Loading system information...</p>
+            </div>
+        </div>
+        
+        <div class="card custom-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Model Export Options</h5>
+            </div>
+            <div class="card-body">
+                <p>After training a model, you can export it to various formats optimized for inference on Raspberry Pi:</p>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th>Description</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TorchScript</td>
+                                <td>Default PyTorch serialized format</td>
+                                <td>Python applications with PyTorch</td>
+                            </tr>
+                            <tr>
+                                <td>NCNN</td>
+                                <td>Tencent's high-performance neural network inference framework</td>
+                                <td>Best for Raspberry Pi and mobile devices</td>
+                            </tr>
+                            <tr>
+                                <td>ONNX</td>
+                                <td>Open Neural Network Exchange format</td>
+                                <td>Cross-platform compatibility</td>
+                            </tr>
+                            <tr>
+                                <td>OpenVINO</td>
+                                <td>Intel's Inference Engine format</td>
+                                <td>Intel-based systems</td>
+                            </tr>
+                            <tr>
+                                <td>TensorFlow Lite</td>
+                                <td>Lightweight TensorFlow format</td>
+                                <td>Mobile and embedded devices</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card custom-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Raspberry Pi Optimization</h5>
+            </div>
+            <div class="card-body">
+                <h6>Recommended Settings</h6>
+                <ul>
+                    <li class="mb-2"><strong>Model:</strong> YOLOv8n or YOLOv5n</li>
+                    <li class="mb-2"><strong>Image Size:</strong> 320×320 or 416×416</li>
+                    <li class="mb-2"><strong>Batch Size:</strong> 4-8</li>
+                    <li class="mb-2"><strong>Export Format:</strong> NCNN (recommended) or TFLite</li>
+                </ul>
+                
+                <h6 class="mt-4">Hardware Tips</h6>
+                <ul>
+                    <li class="mb-2">Use Raspberry Pi 4 with at least 4GB RAM</li>
+                    <li class="mb-2">Add cooling fan or heatsinks</li>
+                    <li class="mb-2">Use Class 10 SD card or SSD</li>
+                    <li>Close other applications during training</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0">About</h5>
+            </div>
+            <div class="card-body">
+                <p>This application provides a user-friendly interface for training and testing YOLO models for license plate detection on Raspberry Pi devices.</p>
+                
+                <p>Built with:</p>
+                <ul>
+                    <li>Flask</li>
+                    <li>Ultralytics YOLOv8</li>
+                    <li>PyTorch</li>
+                    <li>OpenCV</li>
+                    <li>Bootstrap</li>
+                    <li>Chart.js</li>
+                </ul>
+                
+                <h6 class="mt-3">Raspberry Pi Deployment Instructions</h6>
+                <ol>
+                    <li>Train your model with this application</li>
+                    <li>Export the model to NCNN format for best performance</li>
+                    <li>Copy the exported files to your Raspberry Pi</li>
+                    <li>Install NCNN on your Raspberry Pi: <code>sudo apt-get install ncnn</code></li>
+                    <li>Use the model with our detection application</li>
+                </ol>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0"><strong>Note:</strong> For large datasets or complex models, consider training on a more powerful system and importing the model to your Raspberry Pi for inference.</p>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <h6 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Model Repair</h6>
+                    <p>If you encounter model loading errors (e.g., "<code>invalid magic number</code>", "<code>corrupt file</code>"), this application includes automatic model repair functionality that will:</p>
+                    <ul class="mb-0">
+                        <li>Convert corrupted PT files to ONNX</li>
+                        <li>Generate NCNN files from valid models</li>
+                        <li>Create backup copies before repairs</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <h6 class="alert-heading"><i class="bi bi-file-earmark-text"></i> Deployment Documentation</h6>
+                    <p>For detailed instructions on deploying your trained models on Raspberry Pi, including all required dependencies and sample code, see our:</p>
+                    <a href="/static/docs/raspberry_pi_deployment.md" class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-box-arrow-up-right"></i> Raspberry Pi Deployment Guide
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
